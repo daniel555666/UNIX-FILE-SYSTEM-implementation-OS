@@ -164,16 +164,16 @@ int mymkdir(const char *path, const char *name)
         exit(1);
     }
     int dirblock = inodes[fd].first_block;
-    struct dirent *currdir = (struct dirent *)dbs[dirblock].data;
+    struct mydirent *currdir = (struct mydirent *)dbs[dirblock].data;
     if (currdir->size >= MAX_DIR_SIZE)
     {
         perror("currdir->size>=MAX_DIR_SIZE");
         exit(1);
     }
-    int newdirfd = allocate_file((int)sizeof(struct dirent), name);
+    int newdirfd = allocate_file((int)sizeof(struct mydirent), name);
     currdir->fds[currdir->size++] = newdirfd;
     inodes[newdirfd].dir = 1;
-    struct dirent *newdir = malloc(sizeof(struct dirent));
+    struct mydirent *newdir = malloc(sizeof(struct mydirent));
     newdir->size = 0;
     for (int i = 0; i < MAX_DIR_SIZE; i++)
     {
@@ -182,7 +182,7 @@ int mymkdir(const char *path, const char *name)
 
     char *newdiraschar = (char *)newdir;
 
-    for (int i = 0; i < sizeof(struct dirent); i++)
+    for (int i = 0; i < sizeof(struct mydirent); i++)
     {
         writebyte(newdirfd, i, newdiraschar[i]);
     }
@@ -257,17 +257,17 @@ myDIR myopendir(const char *name)
     }
 
     int db = inodes[fd].first_block;
-    struct dirent *live_d = (struct dirent *)dbs[db].data;
+    struct mydirent *live_d = (struct mydirent *)dbs[db].data;
     if (live_d->size >= 10)
     {
         perror("live_d->size>=MAX_DIR");
         return -1;
     }
 
-    int dir = allocate_file(sizeof(struct dirent), this_p);
+    int dir = allocate_file(sizeof(struct mydirent), this_p);
     live_d->fds[live_d->size++] = dir;
     inodes[dir].dir = 1;
-    struct dirent *newdir = malloc(sizeof(struct dirent));
+    struct mydirent *newdir = malloc(sizeof(struct mydirent));
     newdir->size = 0;
     for (int i = 0; i < 10; i++)
     {
@@ -275,7 +275,7 @@ myDIR myopendir(const char *name)
     }
 
     char *newdiraschar = (char *)newdir;
-    for (size_t i = 0; i < sizeof(struct dirent); i++)
+    for (size_t i = 0; i < sizeof(struct mydirent); i++)
     {
         write_data(dir, i, &newdiraschar[i]);
     }
@@ -318,7 +318,7 @@ int createfile(const char *path, const char *name)
     int newfd = allocate_file(1, name);
     int dirfd = myopendir(path);
     printf("hello\n");
-    struct dirent *currdir = myreaddir(dirfd);
+    struct mydirent *currdir = myreaddir(dirfd);
     currdir->fds[currdir->size++] = newfd;
     return newfd;
 }
@@ -329,14 +329,14 @@ void createroot()
      * If inode 0 is not empty an exit failure will occur.
      *
      */
-    int zerofd = allocate_file(sizeof(struct dirent), "root");
+    int zerofd = allocate_file(sizeof(struct mydirent), "root");
     if (zerofd != 0)
     {
         perror("zerofd != 0");
         exit(1);
     }
     inodes[zerofd].dir = 1;
-    struct dirent *rootdir = malloc(sizeof(struct dirent));
+    struct mydirent *rootdir = malloc(sizeof(struct mydirent));
     for (int i = 0; i < MAX_DIR_SIZE; i++)
     {
         rootdir->fds[i] = -1;
@@ -344,7 +344,7 @@ void createroot()
     strcpy(rootdir->d_name, "root");
     rootdir->size = 0;
     char *rootdiraschar = (char *)rootdir;
-    for (int i = 0; i < sizeof(struct dirent); i++)
+    for (int i = 0; i < sizeof(struct mydirent); i++)
     {
         writebyte(zerofd, i, rootdiraschar[i]);
     }
@@ -529,7 +529,7 @@ off_t mylseek(int myfd, off_t offset, int whence)
     }
     return myopenfile[myfd].pos;
 }
-struct dirent *myreaddir(myDIR dirp)
+struct mydirent *myreaddir(myDIR dirp)
 {
     /**
      * @brief Uses @param fd to find the asked directory and @return it as a @struct mydirent. 
@@ -539,7 +539,7 @@ struct dirent *myreaddir(myDIR dirp)
         perror("inodes[fd].dir == 0");
         exit(1);
     }
-    return (struct dirent*)&dbs[inodes[dirp].first_block].data;
+    return (struct mydirent*)&dbs[inodes[dirp].first_block].data;
 }
 int myclosedir(myDIR *dirp)
  {

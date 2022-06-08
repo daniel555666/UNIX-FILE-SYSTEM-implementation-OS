@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
     printf("%s\n", buf);
     myclose(dvirdiscriptor);
     myDIR dd = myopendir("root");
-    struct dirent *fd = myreaddir(dd);
+    struct mydirent *fd = myreaddir(dd);
     printf("name: %s, size: %d\n", fd->d_name, fd->size);
     print_fs();
     mymount(NULL, "fs_data" , NULL, 0, NULL);

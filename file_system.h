@@ -40,7 +40,7 @@ struct open_file
     int fd;
     int pos; 
 };
-struct dirent { 
+struct mydirent { 
     int size;
     int fds[MAX_DIR_SIZE];
     char d_name[NAME_SIZE+1];
@@ -53,7 +53,7 @@ size_t myread(int myfd, void *buf, size_t count);
 size_t mywrite(int myfd, const void *buf, size_t count);
 off_t mylseek(int myfd, off_t offset, int whence);
 myDIR myopendir(const char *name);
-struct dirent *myreaddir(myDIR dirp);
+struct mydirent *myreaddir(myDIR dirp);
 int myclosedir(myDIR *dirp);
 
 
