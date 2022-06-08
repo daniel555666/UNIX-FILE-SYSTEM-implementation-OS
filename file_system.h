@@ -58,7 +58,3 @@ int myclosedir(myDIR *dirp);
 
 
 void print_fs(); // print out info about file system
-void set_filesize(int filenum, int size);
-void write_data(int filenum, int pos, char *data);
-// int allocte_file(char name[8]); 
-int allocate_file(int size, const char *name);

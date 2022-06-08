@@ -9,6 +9,7 @@ struct inode *inodes;
 struct disk_block *dbs;
 struct open_file myopenfile[MAX_FILES];
 
+//***find empty block and inode
 int find_empty_block()
 {
     for (int i = 0; i < sb.num_blocks; i++)
@@ -31,6 +32,7 @@ int find_empty_inode()
     }
     return -1;
 }
+// resize the file size
 void shorten_file(int bn)
 {
     int nn = dbs[bn].next_block_num;
@@ -39,155 +41,6 @@ void shorten_file(int bn)
         shorten_file(nn);
     }
     dbs[bn].next_block_num = -1;
-}
-int allocate_file(int size, const char *name)
-{
-    if (strlen(name) > NAME_SIZE - 1)
-    {
-        perror("strlen(name) > NAME_SIZE - 1");
-        exit(1);
-    }
-    int inode = find_empty_inode();
-    if (inode == -1)
-    {
-        perror("inode == -1");
-        exit(1);
-    }
-    int first_block = find_empty_block();
-    if (first_block == -1)
-    {
-        perror("first_block == -1");
-        exit(1);
-    }
-    inodes[inode].size = size;
-    inodes[inode].first_block = first_block;
-    dbs[first_block].next_block_num = -2;
-    strcpy(inodes[inode].name, name);
-    set_filesize(inode, size);
-    return inode;
-}
-int allocate_file2(char *name)
-{
-    // Find if the file is already found
-    for (int i = 0; i < sb.num_inodes; i++)
-    {
-        if (strcmp(inodes[i].name, name) == 0)
-        {
-            return inodes[i].first_block;
-        }
-    }
-
-    int in = find_empty_inode();
-    int block = find_empty_block();
-
-    inodes[in].first_block = block;
-    strcpy(inodes[in].name, name);
-    dbs[block].next_block_num = -2;
-    return block;
-}
-void writebyte(int fd, int opos, char data)
-{
-    /**
-     * @brief Write a SINGLE byte into a disk block.
-     * The function calculates the correct relevant block (rb) that is needed to be accessed.
-     * if the position that is needed to be wrriten is out of the bounds of the file,
-     * allocate a new disk block for it.
-     */
-    int pos = opos;
-    int rb = inodes[fd].first_block;
-    while (pos >= BLOCKSIZE)
-    {
-        pos -= BLOCKSIZE;
-        if (dbs[rb].next_block_num == -1)
-        {
-            perror("dbs[rb].next_block_num == -1");
-            exit(1);
-        }
-        else if (dbs[rb].next_block_num == -2)
-        { // the current block is the last block, so we allocate a new block
-            dbs[rb].next_block_num = find_empty_block();
-            rb = dbs[rb].next_block_num;
-            dbs[rb].next_block_num = -2;
-        }
-        else
-        {
-            rb = dbs[rb].next_block_num;
-        }
-    }
-    if (opos > inodes[fd].size)
-    {
-        inodes[fd].size = opos + 1;
-    }
-    dbs[rb].data[pos] = data;
-}
-char readbyte(int fd, int pos)
-{
-    /**
-     * @brief Read a SINGLE byte from a disk block.
-     * The function calculates the correct relevant block (rb) that is needed to be accessed.
-     * The single byte is @return 'ed.
-     */
-    int rb = inodes[fd].first_block;
-    while (pos >= BLOCKSIZE)
-    {
-        pos -= BLOCKSIZE;
-        rb = dbs[rb].next_block_num;
-        if (rb == -1)
-        {
-            perror("rb == -1");
-            exit(1);
-        }
-        if (rb == -2)
-        {
-            perror("rb == -2");
-            exit(1);
-        }
-    }
-    return dbs[rb].data[pos];
-}
-
-int mymkdir(const char *path, const char *name)
-{
-    /**
-     * @brief This function goes through the path and finds the FD of the last directory in the path.
-     * Then, it creates a new directory inside the FD that was found.
-     */
-    int fd = myopendir(path);
-    if (fd == -1)
-    {
-        perror("fd==-1");
-        exit(1);
-    }
-    if (inodes[fd].dir != 1)
-    {
-        perror("inodes[fd].dir!=1");
-        exit(1);
-    }
-    int dirblock = inodes[fd].first_block;
-    struct mydirent *currdir = (struct mydirent *)dbs[dirblock].data;
-    if (currdir->size >= MAX_DIR_SIZE)
-    {
-        perror("currdir->size>=MAX_DIR_SIZE");
-        exit(1);
-    }
-    int newdirfd = allocate_file((int)sizeof(struct mydirent), name);
-    currdir->fds[currdir->size++] = newdirfd;
-    inodes[newdirfd].dir = 1;
-    struct mydirent *newdir = malloc(sizeof(struct mydirent));
-    newdir->size = 0;
-    for (int i = 0; i < MAX_DIR_SIZE; i++)
-    {
-        newdir->fds[i] = -1;
-    }
-
-    char *newdiraschar = (char *)newdir;
-
-    for (int i = 0; i < sizeof(struct mydirent); i++)
-    {
-        writebyte(newdirfd, i, newdiraschar[i]);
-    }
-    strcpy(newdir->d_name, name);
-    return newdirfd;
 }
 void set_filesize(int filenum, int size)
 {
@@ -211,6 +64,138 @@ void set_filesize(int filenum, int size)
     shorten_file(bn);
     dbs[bn].next_block_num = -2;
 }
+int allocate_file(const char *name, int size)
+{
+    if (strlen(name) >= NAME_SIZE)
+    {
+        perror("strlen(name) >= NAME_SIZE");
+        exit(1);
+    }
+    int inode = find_empty_inode();
+    if (inode == -1)
+    {
+        perror("inode == -1");
+        exit(1);
+    }
+    int first_block = find_empty_block();
+    if (first_block == -1)
+    {
+        perror("first_block == -1");
+        exit(1);
+    }
+    inodes[inode].size = size;
+    inodes[inode].first_block = first_block;
+    dbs[first_block].next_block_num = -2;
+    strcpy(inodes[inode].name, name);
+    set_filesize(inode, size);
+    return inode;
+}
+//*** write and read a char
+void write_a_char(int fd, int pos, char data)
+{
+    int index = pos;
+    int block_index = inodes[fd].first_block;
+    for (index = pos - BLOCKSIZE; index >= BLOCKSIZE; index -= BLOCKSIZE)
+    {
+        index -= BLOCKSIZE;
+        if (dbs[block_index].next_block_num == -1)
+        {
+            perror("dbs[rb].next_block_num == -1");
+            exit(1);
+        }
+        else if (dbs[block_index].next_block_num == -2)
+        { 
+            dbs[block_index].next_block_num = find_empty_block();
+            block_index = dbs[block_index].next_block_num;
+            dbs[block_index].next_block_num = -2;
+            break;
+        }
+        block_index = dbs[block_index].next_block_num;
+    }
+    if (pos > inodes[fd].size)
+    {
+        inodes[fd].size = pos + 1;
+    }
+    dbs[block_index].data[index] = data;
+}
+char read_a_char(int fd, int pos)
+{
+    int block_index = inodes[fd].first_block;
+    for(pos -= BLOCKSIZE; pos >= BLOCKSIZE; pos -= BLOCKSIZE)
+    {
+        block_index = dbs[block_index].next_block_num;
+        if (block_index == -1)
+        {
+            perror("rb == -1");
+            exit(1);
+        }
+        if (block_index == -2)
+        {
+            perror("rb == -2");
+            exit(1);
+        }
+    }
+    return dbs[block_index].data[pos];
+}
+int get_block_num(int file, int offeset)
+{
+    int bn = inodes[file].first_block;
+    for (int togo = offeset; togo > 0; togo--)
+    {
+        bn = dbs[bn].next_block_num;
+    }
+    return bn;
+}
+void write_data(int filenum, int pos, char *data)
+{
+    // calculate witch block
+    int relative_block = pos / BLOCKSIZE;
+    // find the block number
+    int bn = get_block_num(filenum, relative_block);
+    // calculate the offset in the block
+    int offset = pos % BLOCKSIZE;
+    // wrote the data
+    strcpy(&dbs[bn].data[offset], data);
+}
+int open_new_dir(const char *path, const char *name)
+{
+    int fd = myopendir(path);
+    if (fd == -1)
+    {
+        perror("fd==-1");
+        exit(1);
+    }
+    if (inodes[fd].dir == 0)
+    {
+        perror("inodes[fd].dir == 0");
+        exit(1);
+    }
+    int dirblock = inodes[fd].first_block;
+    struct mydirent *currdir = (struct mydirent *)dbs[dirblock].data;
+    if (currdir->size >= MAX_DIR_SIZE)
+    {
+        perror("currdir->size>=MAX_DIR_SIZE");
+        exit(1);
+    }
+    int newdirfd = allocate_file(name, sizeof(struct mydirent));
+    currdir->fds[currdir->size++] = newdirfd;
+    inodes[newdirfd].dir = 1;
+    struct mydirent *newdir = malloc(sizeof(struct mydirent));
+    newdir->size = 0;
+    for (int i = 0; i < MAX_DIR_SIZE; i++)
+    {
+        newdir->fds[i] = -1;
+    }
+
+    char *newdiraschar = (char *)newdir;
+
+    for (int i = 0; i < sizeof(struct mydirent); i++)
+    {
+        write_a_char(newdirfd, i, newdiraschar[i]);
+    }
+    strcpy(newdir->d_name, name);
+    return newdirfd;
+}
 
 myDIR myopendir(const char *name)
 {
@@ -224,14 +209,14 @@ myDIR myopendir(const char *name)
 
     while (choset != NULL)
     {
-        strcpy(last_p, this_p); // if?
+        strcpy(last_p, this_p);
         strcpy(this_p, choset);
         choset = strtok(NULL, mak);
     }
 
     for (int i = 0; i < sb.num_inodes; i++)
     {
-        if (!strcmp(inodes[i].name, this_p)) // 1 == used dir
+        if (!strcmp(inodes[i].name, this_p))
         {
             if (inodes[i].dir != 1)
             {
@@ -246,25 +231,25 @@ myDIR myopendir(const char *name)
     int fd = myopendir(last_p);
     if (fd == -1)
     {
-        perror("fd==-1");
-        return -1;
+        perror("fd == -1");
+        exit(1);
     }
 
-    if (inodes[fd].dir != 1)
+    if (inodes[fd].dir == 0)
     {
-        perror("inodes[fd].dir!=1");
-        return -1;
+        perror("inodes[fd].dir == 0");
+        exit(1);
     }
 
     int db = inodes[fd].first_block;
     struct mydirent *live_d = (struct mydirent *)dbs[db].data;
     if (live_d->size >= 10)
     {
-        perror("live_d->size>=MAX_DIR");
-        return -1;
+        perror("live_d->size >= 10");
+        exit(1);
     }
 
-    int dir = allocate_file(sizeof(struct mydirent), this_p);
+    int dir = allocate_file(this_p, sizeof(struct mydirent));
     live_d->fds[live_d->size++] = dir;
     inodes[dir].dir = 1;
     struct mydirent *newdir = malloc(sizeof(struct mydirent));
@@ -312,10 +297,9 @@ void sync_fs(const char *target)
 }
 
 // retrun file discriptor
-
 int createfile(const char *path, const char *name)
 {
-    int newfd = allocate_file(1, name);
+    int newfd = allocate_file(name, sizeof(struct mydirent));
     int dirfd = myopendir(path);
     printf("hello\n");
     struct mydirent *currdir = myreaddir(dirfd);
@@ -324,18 +308,13 @@ int createfile(const char *path, const char *name)
 }
 void createroot()
 {
-    /**
-     * @brief Creates a root directory at inode 0.
-     * If inode 0 is not empty an exit failure will occur.
-     *
-     */
-    int zerofd = allocate_file(sizeof(struct mydirent), "root");
-    if (zerofd != 0)
+    int rootd = allocate_file("root", sizeof(struct mydirent));
+    if (rootd < 0)
     {
-        perror("zerofd != 0");
+        perror("rootd < 0");
         exit(1);
     }
-    inodes[zerofd].dir = 1;
+    inodes[rootd].dir = 1;
     struct mydirent *rootdir = malloc(sizeof(struct mydirent));
     for (int i = 0; i < MAX_DIR_SIZE; i++)
     {
@@ -346,7 +325,7 @@ void createroot()
     char *rootdiraschar = (char *)rootdir;
     for (int i = 0; i < sizeof(struct mydirent); i++)
     {
-        writebyte(zerofd, i, rootdiraschar[i]);
+        write_a_char(rootd, i, rootdiraschar[i]);
     }
     free(rootdir);
 }
@@ -404,10 +383,6 @@ int mymount(const char *source, const char *target, const char *filesystemtype, 
 
 int myopen(const char *pathname, int flags)
 {
-    /**
-     * @brief Open a file at the given path.
-     * The opened file will be added into 'openfiles' struct array and this instance will be used to get the pointer of the file.
-     */
     char str[80];
     strcpy(str, pathname);
     char *token;
@@ -417,7 +392,6 @@ int myopen(const char *pathname, int flags)
     char lastpath[NAME_SIZE] = "";
     while (token != NULL)
     {
-        //כנראה סגמנטיישן פולט
         strcpy(lastpath, currpath);
         strcpy(currpath, token);
         token = strtok(NULL, s);
@@ -445,14 +419,10 @@ int myclose(int myfd)
 {
     myopenfile[myfd].fd = -1;
     myopenfile[myfd].pos = -1;
+    return 0;// 0 is good
 }
 size_t myread(int myfd, void *buf, size_t count)
 {
-    /**
-     * @brief Read a chunk of bytes from the given file into @param buf.
-     * @return the current position of the file pointer.
-     *
-     */
     if (inodes[myfd].dir == 1)
     {
         perror("inodes[i].dir == 1");
@@ -466,7 +436,7 @@ size_t myread(int myfd, void *buf, size_t count)
     char *buffer = malloc(count + 1);
     for (int i = 0; i < count; i++)
     {
-        buffer[i] = readbyte(myfd, myopenfile[myfd].pos);
+        buffer[i] = read_a_char(myfd, myopenfile[myfd].pos);
         myopenfile[myfd].pos++;
     }
     buffer[count] = '\0';
@@ -477,11 +447,6 @@ size_t myread(int myfd, void *buf, size_t count)
 }
 size_t mywrite(int myfd, const void *buf, size_t count)
 {
-    /**
-     * @brief Write a chunk of bytes from the given @param buf into fd myfd.
-     * @return the current position of the file pointer.
-     *
-     */
     if (inodes[myfd].dir == 1)
     {
         perror("inodes[myfd].dir == 1");
@@ -495,17 +460,13 @@ size_t mywrite(int myfd, const void *buf, size_t count)
     char *buffer = (char *)buf;
     for (int i = 0; i < count; i++)
     {
-        writebyte(myfd, myopenfile[myfd].pos, buffer[i]);
+        write_a_char(myfd, myopenfile[myfd].pos, buffer[i]);
         myopenfile[myfd].pos++;
     }
     return myopenfile[myfd].pos;
 }
 off_t mylseek(int myfd, off_t offset, int whence)
 {
-    /**
-     * @brief This function is used to move the file pointer, @return the new location of the pointer.
-     *
-     */
     if (myopenfile[myfd].fd != myfd)
     {
         perror("myopenfile[myfd].fd != myfd");
@@ -531,18 +492,15 @@ off_t mylseek(int myfd, off_t offset, int whence)
 }
 struct mydirent *myreaddir(myDIR dirp)
 {
-    /**
-     * @brief Uses @param fd to find the asked directory and @return it as a @struct mydirent. 
-     * 
-     */
-    if (inodes[dirp].dir == 0) {
+    if (inodes[dirp].dir == 0)
+    {
         perror("inodes[fd].dir == 0");
         exit(1);
     }
-    return (struct mydirent*)&dbs[inodes[dirp].first_block].data;
+    return (struct mydirent *)dbs[inodes[dirp].first_block].data;
 }
 int myclosedir(myDIR *dirp)
- {
+{
     printf("We did not, because we did not have to, according to Yuval\n");
     return 0;
 }
@@ -566,25 +524,4 @@ void print_fs()
     {
         printf("block num: %d next block %d\n", i, dbs[i].next_block_num);
     }
-}
-
-int get_block_num(int file, int offeset)
-{
-    int bn = inodes[file].first_block;
-    for (int togo = offeset; togo > 0; togo--)
-    {
-        bn = dbs[bn].next_block_num;
-    }
-    return bn;
-}
-void write_data(int filenum, int pos, char *data)
-{
-    // calculate witch block
-    int relative_block = pos / BLOCKSIZE;
-    // find the block number
-    int bn = get_block_num(filenum, relative_block);
-    // calculate the offset in the block
-    int offset = pos % BLOCKSIZE;
-    // wrote the data
-    strcpy(&dbs[bn].data[offset], data);
 }
