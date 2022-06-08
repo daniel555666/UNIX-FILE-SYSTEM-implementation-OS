@@ -1,3 +1,7 @@
+/**
+ * we get help from:
+ * https://www.youtube.com/watch?v=n2AAhiujAqs&ab_channel=drdelhart
+ */
 #include "file_system.h"
 
 struct super_block sb;
