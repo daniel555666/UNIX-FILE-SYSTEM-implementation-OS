@@ -1,4 +1,5 @@
 #include "file_system.h"
+
 struct super_block sb;
 struct inode *inodes;
 struct disk_block *dbs;
@@ -80,19 +81,6 @@ int allocate_file2(char *name)
     dbs[block].next_block_num = -2;
     return block;
 }
-struct dirent *myreaddir(int fd)
-{
-    /**
-     * @brief Uses @param fd to find the asked directory and @return it as a @struct mydirent.
-     *
-     */
-    if (inodes[fd].dir != 1)
-    {
-        perror("inodes[fd].dir!=1");
-        exit(1);
-    }
-    return (struct dirent *)dbs[inodes[fd].first_block].data;
-}
 void writebyte(int fd, int opos, char data)
 {
     /**
@@ -153,6 +141,7 @@ char readbyte(int fd, int pos)
     }
     return dbs[rb].data[pos];
 }
+
 int mymkdir(const char *path, const char *name)
 {
     /**
@@ -219,10 +208,10 @@ void set_filesize(int filenum, int size)
     dbs[bn].next_block_num = -2;
 }
 
-int myopendir(const char *pathname)
+myDIR myopendir(const char *name)
 {
     char str[80];
-    strcpy(str, pathname);
+    strcpy(str, name);
     char *choset;
     const char mak[2] = "/";
     choset = strtok(str, mak);
@@ -357,6 +346,7 @@ void createroot()
     }
     free(rootdir);
 }
+
 // NOW
 void mymkfs(int size)
 {
@@ -534,6 +524,23 @@ off_t mylseek(int myfd, off_t offset, int whence)
         myopenfile[myfd].pos = 0;
     }
     return myopenfile[myfd].pos;
+}
+struct dirent *myreaddir(myDIR dirp)
+{
+    /**
+     * @brief Uses @param fd to find the asked directory and @return it as a @struct mydirent. 
+     * 
+     */
+    if (inodes[dirp].dir == 0) {
+        perror("inodes[fd].dir == 0");
+        exit(1);
+    }
+    return (struct dirent*)&dbs[inodes[dirp].first_block].data;
+}
+int myclosedir(myDIR *dirp)
+ {
+    printf("We did not, because we did not have to, according to Yuval\n");
+    return 0;
 }
 void print_fs()
 {

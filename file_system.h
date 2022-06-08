@@ -7,6 +7,8 @@
 #define MAX_FILES 10000
 #define NAME_SIZE 8
 #define MAX_DIR_SIZE 10
+
+typedef int myDIR;
 struct super_block
 {
     int num_inodes;
@@ -46,9 +48,10 @@ int myclose(int myfd);
 size_t myread(int myfd, void *buf, size_t count);
 size_t mywrite(int myfd, const void *buf, size_t count);
 off_t mylseek(int myfd, off_t offset, int whence);
+myDIR myopendir(const char *name);
+struct dirent *myreaddir(myDIR dirp);
+int myclosedir(myDIR *dirp);
 
-
-int myopendir(const char *path);
 
 void print_fs(); // print out info about file system
 void set_filesize(int filenum, int size);
