@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Jun  6 18:24:45 2022
+# Make data base, printed on Wed Jun  8 17:57:48 2022
 
 # Variables
 
@@ -49,7 +49,7 @@ SNAP_DATA = /var/snap/code/97
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupport":true}
 # environment
-JOURNAL_STREAM = 8:46156
+JOURNAL_STREAM = 8:45173
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # environment
@@ -73,7 +73,7 @@ VSCODE_VERBOSE_LOGGING = true
 # environment
 _ = /snap/code/97/usr/share/code/code
 # environment
-MANAGERPID = 1235
+MANAGERPID = 1174
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -87,7 +87,7 @@ PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/dvir-Lenovo-Legion-5-15IMH05H:@/tmp/.ICE-unix/1460,unix/dvir-Lenovo-Legion-5-15IMH05H:/tmp/.ICE-unix/1460
+SESSION_MANAGER = local/dvir-Lenovo-Legion-5-15IMH05H:@/tmp/.ICE-unix/1394,unix/dvir-Lenovo-Legion-5-15IMH05H:/tmp/.ICE-unix/1394
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -105,7 +105,7 @@ DISABLE_WAYLAND = 1
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-INVOCATION_ID = c7d7acd66c7f48c5962fa3e1726c59c4
+INVOCATION_ID = d92088a11dc344b3b780673ecee986ff
 # environment
 GDK_PIXBUF_MODULEDIR = /snap/code/97/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
 # default
@@ -117,7 +117,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 1993
+GIO_LAUNCHED_DESKTOP_FILE_PID = 2182
 # automatic
 %F = $(notdir $%)
 # environment
@@ -131,7 +131,7 @@ PWD = /home/dvir/Documents/OS/OS--Ex7
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1422
+SSH_AGENT_PID = 1356
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
@@ -185,7 +185,7 @@ CC = gcc
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-1332347a-737f-41b9-b7ff-24a3f3116942.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-694e1453-8f4f-4ba2-b9a9-053ae75dbdc5.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -257,9 +257,9 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 2038
+VSCODE_PID = 2252
 # variable set hash-table stats:
-# Load=124/1024=12%, Rehash=0, Collisions=18/149=12%
+# Load=124/1024=12%, Rehash=0, Collisions=18/153=12%
 
 # Pattern-specific Variable Values
 
@@ -279,17 +279,14 @@ VSCODE_PID = 2038
 
 # 1 implicit rules, 0 (0.0%) terminal.
 
+ 
 # Files
 
-file_system.o: file_system.c
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'file_system'
- 
-#  Last modified 2022-06-06 15:00:46.99870905
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'makefile', line 11):
-	$(CC) -c $< -o $@
+# Not a target:
+file_system.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 all: main
 #  Phony target (prerequisite of .PHONY).
@@ -297,7 +294,9 @@ all: main
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
 
 .PHONY: all run clean
 #  Implicit rule search has not been done.
@@ -307,7 +306,7 @@ all: main
 # Not a target:
 main.c:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-06 15:02:16.049929758
+#  Last modified 2022-06-08 16:50:16.265767888
 #  File has been updated.
 #  Successfully updated.
 
@@ -315,13 +314,6 @@ main.c:
 makefile:
 #  Implicit rule search has been done.
 #  Last modified 2022-06-06 13:36:53.06726174
-#  File has been updated.
-#  Successfully updated.
-
-# Not a target:
-file_system.c:
-#  Implicit rule search has been done.
-#  Last modified 2022-06-06 15:00:35.290822755
 #  File has been updated.
 #  Successfully updated.
 
@@ -347,35 +339,55 @@ clean:
 
 main: main.o file_system.o
 #  Implicit rule search has not been done.
-#  Last modified 2022-06-06 15:02:22.20188113
+#  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
 #  recipe to execute (from 'makefile', line 8):
 	$(CC) main.o file_system.o -o main
 
 main.o: main.c
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'main'
-#  Last modified 2022-06-06 15:02:22.189881224
+#  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := main.o
+# automatic
+# % := 
+# automatic
+# * := main
+# automatic
+# + := main.c
+# automatic
+# | := 
+# automatic
+# < := main.c
+# automatic
+# ^ := main.c
+# automatic
+# ? := main.c
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/14=7%
 #  recipe to execute (from 'makefile', line 11):
 	$(CC) -c $< -o $@
 
 # files hash-table stats:
-# Load=12/1024=1%, Rehash=0, Collisions=0/37=0%
+# Load=11/1024=1%, Rehash=0, Collisions=0/33=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 21 / storage = 175 B / avg = 8 B
-# current buf: size = 8162 B / used = 175 B / count = 21 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 23 / storage = 186 B / avg = 8 B
+# current buf: size = 8162 B / used = 186 B / count = 23 / avg = 8 B
 
-# strcache performance: lookups = 41 / hit rate = 48%
+# strcache performance: lookups = 38 / hit rate = 39%
 # hash-table stats:
-# Load=21/8192=0%, Rehash=0, Collisions=1/41=2%
-# Finished Make data base on Mon Jun  6 18:24:45 2022
+# Load=23/8192=0%, Rehash=0, Collisions=1/38=3%
+# Finished Make data base on Wed Jun  8 17:57:48 2022
 
  

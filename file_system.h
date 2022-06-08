@@ -4,8 +4,10 @@
 
 #define PATH_MAX 128
 #define BLOCKSIZE 512
-
-struct superblock
+#define MAX_FILES 10000
+#define NAME_SIZE 8
+#define MAX_DIR_SIZE 10
+struct super_block
 {
     int num_inodes;
     int num_blocks;
@@ -16,8 +18,10 @@ struct inode
 {
     int size;
     int first_block;
-    char name[9];
+    int dir; // 0 for file 1 for dir
+    char name[NAME_SIZE + 1];
 };
+
 
 struct disk_block
 {
@@ -25,12 +29,29 @@ struct disk_block
     char data[BLOCKSIZE];
 };
 
-void create_fs(); // initialize new filesysyem
-void mount_fs();  // load adile system
-void sync_fs();   // write the file system
+struct open_file 
+{
+    int fd;
+    int pos; 
+};
+struct dirent { 
+    int size;
+    int fds[MAX_DIR_SIZE];
+    char d_name[NAME_SIZE+1];
+};
+void mymkfs(int size);
+int mymount(const char *source, const char *target, const char *filesystemtype, unsigned long mountflags, const void *data);
+int myopen(const char *pathname, int flags);
+int myclose(int myfd);
+size_t myread(int myfd, void *buf, size_t count);
+size_t mywrite(int myfd, const void *buf, size_t count);
+off_t mylseek(int myfd, off_t offset, int whence);
+
+
+int myopendir(const char *path);
 
 void print_fs(); // print out info about file system
 void set_filesize(int filenum, int size);
 void write_data(int filenum, int pos, char *data);
-char* read_data(int filenum, int pos);
-int allocte_file(char name[8]); // retrun file discriptor
+// int allocte_file(char name[8]); 
+int allocate_file(int size, const char *name);

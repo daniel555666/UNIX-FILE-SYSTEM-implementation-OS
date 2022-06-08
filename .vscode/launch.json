@@ -9,7 +9,7 @@
       "stopAtEntry": false,
       "externalConsole": false,
       "cwd": "/home/dvir/Documents/OS/OS--Ex7",
-      "program": "/home/dvir/Documents/OS/OS--Ex7/build/Debug/outDebug",
+      "program": "/home/dvir/Documents/OS/OS--Ex7/main",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
