@@ -104,7 +104,7 @@ void write_a_char(int fd, int pos, char data)
             exit(1);
         }
         else if (dbs[block_index].next_block_num == -2)
-        { 
+        {
             dbs[block_index].next_block_num = find_empty_block();
             block_index = dbs[block_index].next_block_num;
             dbs[block_index].next_block_num = -2;
@@ -121,7 +121,7 @@ void write_a_char(int fd, int pos, char data)
 char read_a_char(int fd, int pos)
 {
     int block_index = inodes[fd].first_block;
-    for(pos -= BLOCKSIZE; pos >= BLOCKSIZE; pos -= BLOCKSIZE)
+    for (pos -= BLOCKSIZE; pos >= BLOCKSIZE; pos -= BLOCKSIZE)
     {
         block_index = dbs[block_index].next_block_num;
         if (block_index == -1)
@@ -159,7 +159,7 @@ void write_data(int filenum, int pos, char *data)
 }
 int open_new_dir(const char *path, const char *name)
 {
-    int fd = myopendir(path);
+    int fd = *myopendir(path);
     if (fd == -1)
     {
         perror("fd==-1");
@@ -197,7 +197,7 @@ int open_new_dir(const char *path, const char *name)
     return newdirfd;
 }
 
-myDIR myopendir(const char *name)
+myDIR *myopendir(const char *name)
 {
     char str[80];
     strcpy(str, name);
@@ -222,13 +222,15 @@ myDIR myopendir(const char *name)
             {
                 printf("%s\n", inodes[i].name);
                 perror("inodes[i].dir!=1");
-                return -1;
+                exit(1);
             }
-            return i;
+            myDIR *res = (myDIR *)malloc(sizeof(myDIR));
+            *res = i;
+            return res;
         }
     }
 
-    int fd = myopendir(last_p);
+    int fd = *myopendir(last_p);
     if (fd == -1)
     {
         perror("fd == -1");
@@ -265,7 +267,9 @@ myDIR myopendir(const char *name)
         write_data(dir, i, &newdiraschar[i]);
     }
     strcpy(newdir->d_name, this_p);
-    return dir;
+    myDIR *res = (myDIR *)malloc(sizeof(myDIR));
+    *res = dir;
+    return res;
 }
 
 void mount_fs(const char *source)
@@ -300,9 +304,9 @@ void sync_fs(const char *target)
 int createfile(const char *path, const char *name)
 {
     int newfd = allocate_file(name, sizeof(struct mydirent));
-    int dirfd = myopendir(path);
+    int dirfd = *myopendir(path);
     printf("hello\n");
-    struct mydirent *currdir = myreaddir(dirfd);
+    struct mydirent *currdir = myreaddir(&dirfd);
     currdir->fds[currdir->size++] = newfd;
     return newfd;
 }
@@ -419,7 +423,7 @@ int myclose(int myfd)
 {
     myopenfile[myfd].fd = -1;
     myopenfile[myfd].pos = -1;
-    return 0;// 0 is good
+    return 0; // 0 is good
 }
 size_t myread(int myfd, void *buf, size_t count)
 {
@@ -490,14 +494,14 @@ off_t mylseek(int myfd, off_t offset, int whence)
     }
     return myopenfile[myfd].pos;
 }
-struct mydirent *myreaddir(myDIR dirp)
+struct mydirent *myreaddir(myDIR *dirp)
 {
-    if (inodes[dirp].dir == 0)
+    if (inodes[*dirp].dir == 0)
     {
         perror("inodes[fd].dir == 0");
         exit(1);
     }
-    return (struct mydirent *)dbs[inodes[dirp].first_block].data;
+    return (struct mydirent *)dbs[inodes[*dirp].first_block].data;
 }
 int myclosedir(myDIR *dirp)
 {

@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Wed Jun  8 17:57:48 2022
+# Make data base, printed on Wed Jun  8 21:13:07 2022
 
 # Variables
 
@@ -49,7 +49,7 @@ SNAP_DATA = /var/snap/code/97
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupport":true}
 # environment
-JOURNAL_STREAM = 8:45173
+JOURNAL_STREAM = 8:43756
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # environment
@@ -73,7 +73,7 @@ VSCODE_VERBOSE_LOGGING = true
 # environment
 _ = /snap/code/97/usr/share/code/code
 # environment
-MANAGERPID = 1174
+MANAGERPID = 1195
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -87,7 +87,7 @@ PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/dvir-Lenovo-Legion-5-15IMH05H:@/tmp/.ICE-unix/1394,unix/dvir-Lenovo-Legion-5-15IMH05H:/tmp/.ICE-unix/1394
+SESSION_MANAGER = local/dvir-Lenovo-Legion-5-15IMH05H:@/tmp/.ICE-unix/1417,unix/dvir-Lenovo-Legion-5-15IMH05H:/tmp/.ICE-unix/1417
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -105,7 +105,7 @@ DISABLE_WAYLAND = 1
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-INVOCATION_ID = d92088a11dc344b3b780673ecee986ff
+INVOCATION_ID = 2f51e1352f434612bd2a0cd3a57c21cd
 # environment
 GDK_PIXBUF_MODULEDIR = /snap/code/97/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
 # default
@@ -117,7 +117,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 2182
+GIO_LAUNCHED_DESKTOP_FILE_PID = 1864
 # automatic
 %F = $(notdir $%)
 # environment
@@ -131,7 +131,7 @@ PWD = /home/dvir/Documents/OS/OS--Ex7
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1356
+SSH_AGENT_PID = 1379
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
@@ -185,7 +185,7 @@ CC = gcc
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-694e1453-8f4f-4ba2-b9a9-053ae75dbdc5.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-965a7f45-c61c-41df-a6b0-49b03883daf2.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -257,7 +257,7 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 2252
+VSCODE_PID = 2032
 # variable set hash-table stats:
 # Load=124/1024=12%, Rehash=0, Collisions=18/153=12%
 
@@ -279,7 +279,6 @@ VSCODE_PID = 2252
 
 # 1 implicit rules, 0 (0.0%) terminal.
 
- 
 # Files
 
 # Not a target:
@@ -306,7 +305,8 @@ all: main
 # Not a target:
 main.c:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-08 16:50:16.265767888
+ 
+#  Last modified 2022-06-08 20:15:36.674787009
 #  File has been updated.
 #  Successfully updated.
 
@@ -388,6 +388,6 @@ main.o: main.c
 # strcache performance: lookups = 38 / hit rate = 39%
 # hash-table stats:
 # Load=23/8192=0%, Rehash=0, Collisions=1/38=3%
-# Finished Make data base on Wed Jun  8 17:57:48 2022
+# Finished Make data base on Wed Jun  8 21:13:07 2022
 
  

@@ -15,8 +15,8 @@ int main(int argc, char const *argv[])
     myread(dvirdiscriptor,buf, 50);
     printf("%s\n", buf);
     myclose(dvirdiscriptor);
-    myDIR dd = myopendir("root");
-    printf("%d\n", dd);
+    myDIR *dd = myopendir("root");
+    printf("%d\n", *dd);
     struct mydirent *fd = myreaddir(dd);
     printf("name: %s, size: %d\n", fd->d_name, fd->size);
     print_fs();
