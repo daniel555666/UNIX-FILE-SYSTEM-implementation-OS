@@ -386,22 +386,9 @@ int mymount(const char *source, const char *target, const char *filesystemtype, 
 
 int myopen(const char *pathname, int flags)
 {
-    char str[80];
-    strcpy(str, pathname);
-    char *token;
-    const char s[2] = "/";
-    token = strtok(str, s);
-    char currpath[NAME_SIZE] = "";
-    char lastpath[NAME_SIZE] = "";
-    while (token != NULL)
-    {
-        strcpy(lastpath, currpath);
-        strcpy(currpath, token);
-        token = strtok(NULL, s);
-    }
     for (int i = 0; i < sb.num_inodes; i++)
     {
-        if (!strcmp(inodes[i].name, currpath))
+        if (!strcmp(inodes[i].name, pathname))
         {
             if (inodes[i].dir == 1)
             {
@@ -413,7 +400,7 @@ int myopen(const char *pathname, int flags)
             return i;
         }
     }
-    int i = createfile(lastpath, currpath);
+    int i = createfile("root", pathname);
     myopenfile[i].fd = i;
     myopenfile[i].pos = 0;
     return i;

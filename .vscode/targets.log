@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Wed Jun  8 21:13:07 2022
+# Make data base, printed on Thu Jun  9 13:23:32 2022
 
 # Variables
 
@@ -49,7 +49,7 @@ SNAP_DATA = /var/snap/code/97
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupport":true}
 # environment
-JOURNAL_STREAM = 8:43756
+JOURNAL_STREAM = 8:41266
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # environment
@@ -73,7 +73,7 @@ VSCODE_VERBOSE_LOGGING = true
 # environment
 _ = /snap/code/97/usr/share/code/code
 # environment
-MANAGERPID = 1195
+MANAGERPID = 1198
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -87,7 +87,7 @@ PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/dvir-Lenovo-Legion-5-15IMH05H:@/tmp/.ICE-unix/1417,unix/dvir-Lenovo-Legion-5-15IMH05H:/tmp/.ICE-unix/1417
+SESSION_MANAGER = local/dvir-Lenovo-Legion-5-15IMH05H:@/tmp/.ICE-unix/1418,unix/dvir-Lenovo-Legion-5-15IMH05H:/tmp/.ICE-unix/1418
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -105,7 +105,7 @@ DISABLE_WAYLAND = 1
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-INVOCATION_ID = 2f51e1352f434612bd2a0cd3a57c21cd
+INVOCATION_ID = 2ddc6fbb20ca4b5f8ec32ff5ea197dbf
 # environment
 GDK_PIXBUF_MODULEDIR = /snap/code/97/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
 # default
@@ -117,7 +117,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 1864
+GIO_LAUNCHED_DESKTOP_FILE_PID = 1865
 # automatic
 %F = $(notdir $%)
 # environment
@@ -131,7 +131,7 @@ PWD = /home/dvir/Documents/OS/OS--Ex7
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1379
+SSH_AGENT_PID = 1380
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
@@ -185,7 +185,7 @@ CC = gcc
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-965a7f45-c61c-41df-a6b0-49b03883daf2.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-a235fe14-4cf9-4b86-81fd-238a18138d00.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -257,7 +257,7 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 2032
+VSCODE_PID = 1971
 # variable set hash-table stats:
 # Load=124/1024=12%, Rehash=0, Collisions=18/153=12%
 
@@ -267,9 +267,9 @@ VSCODE_PID = 2032
 
 # Directories
 
-# . (device 2050, inode 3939817): 10 files, no impossibilities.
+# . (device 2050, inode 3939817): 13 files, no impossibilities.
 
-# 10 files, no impossibilities in 1 directories.
+# 13 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -280,6 +280,7 @@ VSCODE_PID = 2032
 # 1 implicit rules, 0 (0.0%) terminal.
 
 # Files
+ 
 
 # Not a target:
 file_system.o:
@@ -305,15 +306,14 @@ all: main
 # Not a target:
 main.c:
 #  Implicit rule search has been done.
- 
-#  Last modified 2022-06-08 20:15:36.674787009
+#  Last modified 2022-06-09 12:53:22.555570157
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-06 13:36:53.06726174
+#  Last modified 2022-06-09 12:23:02.016053434
 #  File has been updated.
 #  Successfully updated.
 
@@ -337,7 +337,13 @@ clean:
 #  recipe to execute (from 'makefile', line 14):
 	rm -f *.o main
 
-main: main.o file_system.o
+# Not a target:
+mylibc.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+main: main.o file_system.o mylibc.o
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has been updated.
@@ -345,7 +351,7 @@ main: main.o file_system.o
 # variable set hash-table stats:
 # Load=0/32=0%, Rehash=0, Collisions=0/4=0%
 #  recipe to execute (from 'makefile', line 8):
-	$(CC) main.o file_system.o -o main
+	$(CC) main.o mylibc.o file_system.o -o main
 
 main.o: main.c
 #  Implicit rule search has been done.
@@ -375,19 +381,19 @@ main.o: main.c
 	$(CC) -c $< -o $@
 
 # files hash-table stats:
-# Load=11/1024=1%, Rehash=0, Collisions=0/33=0%
+# Load=12/1024=1%, Rehash=0, Collisions=0/35=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 23 / storage = 186 B / avg = 8 B
-# current buf: size = 8162 B / used = 186 B / count = 23 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 27 / storage = 218 B / avg = 8 B
+# current buf: size = 8162 B / used = 218 B / count = 27 / avg = 8 B
 
-# strcache performance: lookups = 38 / hit rate = 39%
+# strcache performance: lookups = 42 / hit rate = 35%
 # hash-table stats:
-# Load=23/8192=0%, Rehash=0, Collisions=1/38=3%
-# Finished Make data base on Wed Jun  8 21:13:07 2022
+# Load=27/8192=0%, Rehash=0, Collisions=1/42=2%
+# Finished Make data base on Thu Jun  9 13:23:32 2022
 
  
