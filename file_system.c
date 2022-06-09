@@ -305,7 +305,6 @@ int createfile(const char *path, const char *name)
 {
     int newfd = allocate_file(name, sizeof(struct mydirent));
     int dirfd = *myopendir(path);
-    printf("hello\n");
     struct mydirent *currdir = myreaddir(&dirfd);
     currdir->fds[currdir->size++] = newfd;
     return newfd;
@@ -375,14 +374,15 @@ int mymount(const char *source, const char *target, const char *filesystemtype, 
         perror("source == NULL && target == NULL");
         exit(1);
     }
-    if (source != NULL)
-    {
-        mount_fs(source);
-    }
     if (target != NULL)
     {
         sync_fs(target);
     }
+    if (source != NULL)
+    {
+        mount_fs(source);
+    }
+    
 }
 
 int myopen(const char *pathname, int flags)
@@ -482,7 +482,13 @@ off_t mylseek(int myfd, off_t offset, int whence)
     }
     else if (whence == SEEK_END)
     {
-        myopenfile[myfd].pos = inodes[myfd].size + offset;
+        myopenfile[myfd].pos += offset;
+        while (read_a_char(myfd, myopenfile[myfd].pos) != '\0')
+        {
+            myopenfile[myfd].pos++;
+        }
+        
+        
     }
     else if (whence == SEEK_SET)
     {
@@ -520,12 +526,12 @@ void print_fs()
     {
         printf("\tname %s\n", inodes[i].name);
         printf("\tsize %d\n", inodes[i].size);
-        printf("\tfirst_block %d\n", inodes[i].first_block);
+        printf("\tfirst_block %d\n\n", inodes[i].first_block);
     }
     // dbs
     printf("block:\n");
     for (int i = 0; i < sb.num_blocks; i++)
     {
-        printf("block num: %d next block %d\n", i, dbs[i].next_block_num);
+        printf("\tblock num: %d next block %d\n\n", i, dbs[i].next_block_num);
     }
 }
