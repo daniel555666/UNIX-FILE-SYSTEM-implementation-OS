@@ -4,8 +4,8 @@ FLAGS=
 HEADERS = 
 all: main
 
-main: main.o file_system.o
-	$(CC) main.o file_system.o -o main
+main: main.o file_system.o mylibc.o
+	$(CC) main.o mylibc.o file_system.o -o main
 
 %.o: %.c 
 	$(CC) -c $< -o $@

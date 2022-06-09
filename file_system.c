@@ -7,7 +7,6 @@
 struct super_block sb;
 struct inode *inodes;
 struct disk_block *dbs;
-struct open_file myopenfile[MAX_FILES];
 
 //***find empty block and inode
 int find_empty_block()
