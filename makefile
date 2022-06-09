@@ -21,4 +21,4 @@ mylibc.o:
 	$(CC) -c $< -o $@ -fPIC
 
 clean:
-	rm -f *.o test
+	rm -f *.o test .so

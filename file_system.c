@@ -179,20 +179,20 @@ int open_new_dir(const char *path, const char *name)
     int newdirfd = allocate_file(name, sizeof(struct mydirent));
     currdir->fds[currdir->size++] = newdirfd;
     inodes[newdirfd].dir = 1;
-    struct mydirent *newdir = malloc(sizeof(struct mydirent));
-    newdir->size = 0;
+    struct mydirent *new_dir = malloc(sizeof(struct mydirent));
+    new_dir->size = 0;
     for (int i = 0; i < MAX_DIR_SIZE; i++)
     {
-        newdir->fds[i] = -1;
+        new_dir->fds[i] = -1;
     }
 
-    char *newdiraschar = (char *)newdir;
+    char *newdiraschar = (char *)new_dir;
 
     for (int i = 0; i < sizeof(struct mydirent); i++)
     {
         write_a_char(newdirfd, i, newdiraschar[i]);
     }
-    strcpy(newdir->d_name, name);
+    strcpy(new_dir->d_name, name);
     return newdirfd;
 }
 
@@ -253,19 +253,19 @@ myDIR *myopendir(const char *name)
     int dir = allocate_file(this_p, sizeof(struct mydirent));
     live_d->fds[live_d->size++] = dir;
     inodes[dir].dir = 1;
-    struct mydirent *newdir = malloc(sizeof(struct mydirent));
-    newdir->size = 0;
+    struct mydirent *new_dir = malloc(sizeof(struct mydirent));
+    new_dir->size = 0;
     for (int i = 0; i < 10; i++)
     {
-        newdir->fds[i] = -1;
+        new_dir->fds[i] = -1;
     }
 
-    char *newdiraschar = (char *)newdir;
+    char *newdiraschar = (char *)new_dir;
     for (size_t i = 0; i < sizeof(struct mydirent); i++)
     {
         write_data(dir, i, &newdiraschar[i]);
     }
-    strcpy(newdir->d_name, this_p);
+    strcpy(new_dir->d_name, this_p);
     myDIR *res = (myDIR *)malloc(sizeof(myDIR));
     res->n = dir;
     return res;

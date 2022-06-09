@@ -2,7 +2,6 @@
 #include "myfs.h"
 #include <string.h>
 #include <stdarg.h>
-#define O_CREAT 0100
 
 
 myFILE *myfopen(const char *pathname, const char *mode)
@@ -13,7 +12,7 @@ myFILE *myfopen(const char *pathname, const char *mode)
         printf("error in malloc");
         exit(0);
     }
-    f->fd = myopen(pathname,O_CREAT);
+    f->fd = myopen(pathname,0);
     if (strlen(mode) > 2)
     {
         printf("wrong mode");
