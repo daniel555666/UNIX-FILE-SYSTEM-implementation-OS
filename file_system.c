@@ -2,12 +2,12 @@
  * we get help from:
  * https://www.youtube.com/watch?v=n2AAhiujAqs&ab_channel=drdelhart
  */
-#include "file_system.h"
+#include "myfs.h"
 
 struct super_block sb;
 struct inode *inodes;
 struct disk_block *dbs;
-
+ 
 //***find empty block and inode
 int find_empty_block()
 {
@@ -448,8 +448,13 @@ size_t myread(int myfd, void *buf, size_t count)
 
     return myopenfile[myfd].pos;
 }
+int c=0;
 size_t mywrite(int myfd, const void *buf, size_t count)
-{
+{c++;
+    if(c==3){
+        float* f1=(float*)buf;
+        printf("%f-in if mywrite\n",*f1);
+    }
     if (inodes[myfd].dir == 1)
     {
         perror("inodes[myfd].dir == 1");

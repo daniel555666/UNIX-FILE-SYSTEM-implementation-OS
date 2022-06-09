@@ -1,5 +1,5 @@
-#include "mylibc.h"
-#include "file_system.h"
+#include "mystdio.h"
+#include "myfs.h"
 #include <string.h>
 #include <stdarg.h>
 
@@ -49,10 +49,14 @@ size_t myfread(void *restrict ptr, size_t size, size_t nmemb, myFILE *restrict s
     }
     return 0; // cant read no mode for reading
 }
-
-size_t myfwrite(const void *restrict ptr, size_t size, size_t nmemb, myFILE *stream)
+int k=0;
+size_t myfwrite(const void * ptr, size_t size, size_t nmemb, myFILE *stream)
 { // size_t mywrite(int myfd, const void *buf, size_t count)
-
+k++;
+if(k==3){
+        float* f1=(float*)ptr;
+        printf("%f-in if myfwrite\n",*f1);
+    }
     if (stream->mod[0] == 'w' || (stream->mod[0] == 'r' && stream->mod[1] == '+') || stream->mod[0] == 'a')
     {
         size_t start_pos = myopenfile[stream->fd].pos;
@@ -91,7 +95,10 @@ int myfscanf(myFILE *restrict stream, const char *restrict format, ...)
             }
             else if (format[i + 1] == 'f')
             {
-                myfread(va_arg(arguments, void *), sizeof(float), 1, stream);
+                float* p=(float*)va_arg(arguments, void *);
+                float f=(float)*p;
+                printf("%f-in fscnaf\n",f);
+                myfread(p, sizeof(float), 1, stream);
                 j++;
             }
             else if (format[i + 1] == 'c')
@@ -126,6 +133,7 @@ int myfprintf(myFILE *stream, const char *format, ...)
             else if (format[i + 1] == 'f')
             {
                 float temp2 = (float)va_arg(arguments, double);
+                printf("%f-in fprint\n",temp2);
                 myfwrite(&temp2, sizeof(float), 1, stream);
                 j++;
             }
