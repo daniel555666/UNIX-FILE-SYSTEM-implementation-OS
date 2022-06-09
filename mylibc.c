@@ -53,7 +53,7 @@ size_t myfread(void *restrict ptr, size_t size, size_t nmemb, myFILE *restrict s
 size_t myfwrite(const void *restrict ptr, size_t size, size_t nmemb, myFILE *stream)
 { // size_t mywrite(int myfd, const void *buf, size_t count)
 
-    if (stream->mod[0] == 'w' || (stream->mod[0] == 'w' && stream->mod[1] == '+') || stream->mod[0] == 'a')
+    if (stream->mod[0] == 'w' || (stream->mod[0] == 'r' && stream->mod[1] == '+') || stream->mod[0] == 'a')
     {
         size_t start_pos = myopenfile[stream->fd].pos;
         size_t end_pos = mywrite(stream->fd, ptr, size * nmemb);
@@ -79,7 +79,7 @@ int myfscanf(myFILE *restrict stream, const char *restrict format, ...)
     va_list arguments;
     va_start(arguments, format);
     int format_len = strlen(format);
-
+    int j = 0;
     for (size_t i = 0; i < format_len; i++)
     {
         if (format[i] == '%')
@@ -87,24 +87,28 @@ int myfscanf(myFILE *restrict stream, const char *restrict format, ...)
             if (format[i + 1] == 'd')
             {
                 myfread(va_arg(arguments, void *), sizeof(int), 1, stream);
+                j++;
             }
             else if (format[i + 1] == 'f')
             {
                 myfread(va_arg(arguments, void *), sizeof(float), 1, stream);
+                j++;
             }
             else if (format[i + 1] == 'c')
             {
                 myfread(va_arg(arguments, void *), sizeof(char), 1, stream);
+                j++;
             }
             i++;
         }
     }
+    return j;
 }
 
 // write to the file the chars
 int myfprintf(myFILE *stream, const char *format, ...)
 {
-
+    int j=0;
     va_list arguments;
     va_start(arguments, format);
     int format_len = strlen(format);
@@ -117,16 +121,19 @@ int myfprintf(myFILE *stream, const char *format, ...)
             {
                 int temp1 = va_arg(arguments, int);
                 myfwrite(&temp1, sizeof(int), 1, stream);
+                j++;
             }
             else if (format[i + 1] == 'f')
             {
-                float temp2 = va_arg(arguments, double);
+                float temp2 = (float)va_arg(arguments, double);
                 myfwrite(&temp2, sizeof(float), 1, stream);
+                j++;
             }
             else if (format[i + 1] == 'c')
             {
                 char temp3 = (va_arg(arguments, int));
                 myfwrite(&temp3, sizeof(char), 1, stream);
+                j++;
             }
             i++;
         }
@@ -141,4 +148,5 @@ int myfprintf(myFILE *stream, const char *format, ...)
             i--; // return to the '%' char
         }
     }
+    return j;
 }

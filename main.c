@@ -4,37 +4,39 @@
 int main(int argc, char const *argv[])
 {
     mymkfs(10000);
-    mymount("fs_data", NULL, NULL, 0, NULL);
-    // print_fs();
-    // int dvirdiscriptor = allocate_file(100, "Dvir");
-    // int dvirdiscriptor = myopen("root/Dvir", 1);
-    // int ariel_discriptor = allocte_file("Ariel");
-
-    // mywrite(dvirdiscriptor, "dvir is the king of os and he need to get 100!", 50);
-    // mylseek(dvirdiscriptor,0, SEEK_SET);
-    // char buf[50];
-    // myread(dvirdiscriptor,buf, 50);
-    // printf("%s\n", buf);
-    // myclose(dvirdiscriptor);
-    // myDIR *dd = myopendir("root");
-    // printf("%d\n", *dd);
-    // struct mydirent *fd = myreaddir(dd);
-    // printf("name: %s, size: %d\n", fd->d_name, fd->size);
-    // // print_fs();
-    // mymount(NULL, "fs_data" , NULL, 0, NULL);
-    // printf("done :)\n");
-
-    char c = 'a';
-    char c2 = 'b';
-    myFILE *fd = myfopen("root/d7", "a");
-    myfprintf(fd, "%c%c", 'y', ';');
-    myfclose(fd);
-    myFILE *fd2 = myfopen("root/d7", "r");
+    mymount("DISC", "DISC", NULL, 0, NULL);
+    printf("TEST PASS: Was able to open the disk\n");
+    myFILE *myfd = myfopen("root/file", "r+");
+    if (myfprintf(myfd, "%c%d",'p',5) == 2)
+    {
+        printf("TEST PASS: Was able to write a char and int\n");
+    }
+    myfseek(myfd, 0, SEEK_SET);
+    char c = '0';
     int n = 0;
-    int n2 = 0;
-    myfscanf(fd2, "%c%c", &c, &c2);
-
-    printf("%c%c-last print", c, c2);
+    if (myfscanf(myfd, "%c%d", &c, &n) == 2)
+    {
+        printf("TEST PASS: Was able to read:\n\t char- %c and int- %d \n", c, n);
+    }
+    myfclose(myfd);
+    printf("TEST PASS: Was able to close the file\n");
+    
+    myfd = myfopen("root/file", "a");
+    if (myfprintf(myfd, "%f", 7.5) == 1)
+    {
+        printf("TEST PASS: Was able to write a float\n");
+    }
+    myfclose(myfd);
+    myfd = myfopen("root/file", "r");
+    c = '0';
+    n = 0;
+    float f = 0;
+    if (myfscanf(myfd, "%c%d%f", &c, &n, &f) == 3)
+    {
+        printf("TEST PASS: Was able to read a char %c and int %d and float %f\n", c, n, f);
+    }
+    myfclose(myfd);
+    printf("TEST PASS: Was able to close the file\n");
 
     return 0;
 }

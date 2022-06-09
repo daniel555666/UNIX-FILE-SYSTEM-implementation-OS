@@ -12,7 +12,11 @@
 #define NAME_SIZE 8
 #define MAX_DIR_SIZE 10
 
-typedef int myDIR;
+typedef struct dir 
+{
+    int n;
+    char *d_name;
+} myDIR;
 struct super_block
 {
     int num_inodes;

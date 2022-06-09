@@ -158,7 +158,7 @@ void write_data(int filenum, int pos, char *data)
 }
 int open_new_dir(const char *path, const char *name)
 {
-    int fd = *myopendir(path);
+    int fd = myopendir(path)->n;
     if (fd == -1)
     {
         perror("fd==-1");
@@ -224,12 +224,12 @@ myDIR *myopendir(const char *name)
                 exit(1);
             }
             myDIR *res = (myDIR *)malloc(sizeof(myDIR));
-            *res = i;
+            res-> n =i;
             return res;
         }
     }
 
-    int fd = *myopendir(last_p);
+    int fd = myopendir(last_p)->n;
     if (fd == -1)
     {
         perror("fd == -1");
@@ -267,7 +267,7 @@ myDIR *myopendir(const char *name)
     }
     strcpy(newdir->d_name, this_p);
     myDIR *res = (myDIR *)malloc(sizeof(myDIR));
-    *res = dir;
+    res->n = dir;
     return res;
 }
 
@@ -303,8 +303,8 @@ void sync_fs(const char *target)
 int createfile(const char *path, const char *name)
 {
     int newfd = allocate_file(name, sizeof(struct mydirent));
-    int dirfd = *myopendir(path);
-    struct mydirent *currdir = myreaddir(&dirfd);
+    myDIR *dirfd = myopendir(path);
+    struct mydirent *currdir = myreaddir(dirfd);
     currdir->fds[currdir->size++] = newfd;
     return newfd;
 }
@@ -501,12 +501,12 @@ off_t mylseek(int myfd, off_t offset, int whence)
 }
 struct mydirent *myreaddir(myDIR *dirp)
 {
-    if (inodes[*dirp].dir == 0)
+    if (inodes[dirp->n].dir == 0)
     {
         perror("inodes[fd].dir == 0");
         exit(1);
     }
-    return (struct mydirent *)dbs[inodes[*dirp].first_block].data;
+    return (struct mydirent *)dbs[inodes[dirp->n].first_block].data;
 }
 int myclosedir(myDIR *dirp)
 {
