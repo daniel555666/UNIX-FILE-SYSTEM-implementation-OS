@@ -30,6 +30,7 @@ struct inode
     int first_block;
     int dir; // 0 for file 1 for dir
     char name[NAME_SIZE + 1];
+    int real_size;
 };
 
 
@@ -50,7 +51,9 @@ struct mydirent {
     char d_name[NAME_SIZE+1];
 };
 struct open_file myopenfile[MAX_FILES];
-
+struct super_block sb;
+struct inode *inodes;
+struct disk_block *dbs;
 
 void mymkfs(int size);
 int mymount(const char *source, const char *target, const char *filesystemtype, unsigned long mountflags, const void *data);

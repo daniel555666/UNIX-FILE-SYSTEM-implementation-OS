@@ -2,6 +2,7 @@ make --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/home/dvir/Documents/OS/OS--Ex7'
 gcc -c main.c -o main.o
 gcc -c file_system.c -o file_system.o
-gcc main.o file_system.o -o main
+gcc -c mylibc.c -o mylibc.o
+gcc main.o mylibc.o file_system.o -o main
 make: Leaving directory '/home/dvir/Documents/OS/OS--Ex7'
  

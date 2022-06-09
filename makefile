@@ -1,12 +1,12 @@
 .PHONY: all run clean
-CC = gcc
+CC = gcc -g
 FLAGS= 
 HEADERS = 
 
-all: libmylibc.so libmyfs.so main  
+all: libmylibc.so libmyfs.so test  
 
-main: main.o libmylibc.so libmyfs.so
-	$(CC) main.o ./libmylibc.so ./libmyfs.so -o main -fPIC
+test: test.o libmylibc.so libmyfs.so
+	$(CC) test.o ./libmylibc.so ./libmyfs.so -o test -fPIC
 
 libmyfs.so: file_system.o
 	$(CC) file_system.o -shared -o libmyfs.so -fPIC
@@ -21,4 +21,4 @@ mylibc.o:
 	$(CC) -c $< -o $@ -fPIC
 
 clean:
-	rm -f *.o main
+	rm -f *.o test

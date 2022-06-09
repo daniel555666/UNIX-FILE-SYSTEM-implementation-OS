@@ -3,11 +3,10 @@
  * https://www.youtube.com/watch?v=n2AAhiujAqs&ab_channel=drdelhart
  */
 #include "myfs.h"
+#define O_CREAT 0100
 
-struct super_block sb;
-struct inode *inodes;
-struct disk_block *dbs;
- 
+
+
 //***find empty block and inode
 int find_empty_block()
 {
@@ -90,11 +89,12 @@ int allocate_file(const char *name, int size)
     return inode;
 }
 //*** write and read a char
-void write_a_char(int fd, int pos, char data)
+void write_a_char(int fd, int cur_pos, char data)
 {
-    int index = pos;
-    int block_index = inodes[fd].first_block;
-    for (index = pos - BLOCKSIZE; index >= BLOCKSIZE; index -= BLOCKSIZE)
+    int index=cur_pos;
+    int  block_index=inodes[fd].first_block;
+
+    for (index = cur_pos - BLOCKSIZE; index >= BLOCKSIZE; index -= BLOCKSIZE)
     {
         index -= BLOCKSIZE;
         if (dbs[block_index].next_block_num == -1)
@@ -111,16 +111,16 @@ void write_a_char(int fd, int pos, char data)
         }
         block_index = dbs[block_index].next_block_num;
     }
-    if (pos > inodes[fd].size)
+    if (cur_pos > inodes[fd].size)
     {
-        inodes[fd].size = pos + 1;
+        inodes[fd].size = cur_pos + 1;
     }
     dbs[block_index].data[index] = data;
 }
-char read_a_char(int fd, int pos)
+char read_a_char(int fd, int cur_pos)
 {
     int block_index = inodes[fd].first_block;
-    for (pos -= BLOCKSIZE; pos >= BLOCKSIZE; pos -= BLOCKSIZE)
+    for (cur_pos -= BLOCKSIZE; cur_pos >= BLOCKSIZE; cur_pos -= BLOCKSIZE)
     {
         block_index = dbs[block_index].next_block_num;
         if (block_index == -1)
@@ -134,7 +134,7 @@ char read_a_char(int fd, int pos)
             exit(1);
         }
     }
-    return dbs[block_index].data[pos];
+    return dbs[block_index].data[cur_pos];
 }
 int get_block_num(int file, int offeset)
 {
@@ -350,13 +350,14 @@ void mymkfs(int size)
     for (int i = 0; i < sb.num_inodes; i++)
     {
         inodes[i].size = -1;
+        inodes[i].real_size = 0;
         inodes[i].first_block = -1;
         strcpy(inodes[i].name, "");
     }
     dbs = malloc(sizeof(struct disk_block) * sb.num_blocks);
     if (dbs == NULL)
     {
-        perror("dbs == NULL");
+        perror("dbs== NULL");
         exit(1);
     }
     for (int i = 0; i < sb.num_blocks; i++)
@@ -370,7 +371,7 @@ int mymount(const char *source, const char *target, const char *filesystemtype, 
 {
     if (source == NULL && target == NULL)
     {
-        perror("source == NULL && target == NULL");
+        perror("source==NULL && target==NULL");
         exit(1);
     }
     if (target != NULL)
@@ -385,23 +386,12 @@ int mymount(const char *source, const char *target, const char *filesystemtype, 
 }
 
 int myopen(const char *pathname, int flags)
-{
-    char str[80];
-    strcpy(str, pathname);
-    char *token;
-    const char s[2] = "/";
-    token = strtok(str, s);
-    char currpath[NAME_SIZE] = "";
-    char lastpath[NAME_SIZE] = "";
-    while (token != NULL)
+{   int i = 0;
+    int j = 0;
+    
+    for ( i = 0; i < sb.num_inodes; i++)
     {
-        strcpy(lastpath, currpath);
-        strcpy(currpath, token);
-        token = strtok(NULL, s);
-    }
-    for (int i = 0; i < sb.num_inodes; i++)
-    {
-        if (!strcmp(inodes[i].name, currpath))
+        if (!strcmp(inodes[i].name, pathname))
         {
             if (inodes[i].dir == 1)
             {
@@ -413,15 +403,16 @@ int myopen(const char *pathname, int flags)
             return i;
         }
     }
-    int i = createfile(lastpath, currpath);
-    myopenfile[i].fd = i;
-    myopenfile[i].pos = 0;
-    return i;
+    j = createfile("root", pathname);
+    myopenfile[j].fd = j;
+    myopenfile[j].pos = 0;
+    return j;
 }
 int myclose(int myfd)
 {
     myopenfile[myfd].fd = -1;
     myopenfile[myfd].pos = -1;
+
     return 0; // 0 is good
 }
 size_t myread(int myfd, void *buf, size_t count)
@@ -436,6 +427,7 @@ size_t myread(int myfd, void *buf, size_t count)
         perror("myopenfile[myfd].fd != myfd");
         exit(1);
     }
+
     char *buffer = malloc(count + 1);
     for (int i = 0; i < count; i++)
     {
@@ -450,11 +442,7 @@ size_t myread(int myfd, void *buf, size_t count)
 }
 int c=0;
 size_t mywrite(int myfd, const void *buf, size_t count)
-{c++;
-    if(c==3){
-        float* f1=(float*)buf;
-        printf("%f-in if mywrite\n",*f1);
-    }
+{
     if (inodes[myfd].dir == 1)
     {
         perror("inodes[myfd].dir == 1");
@@ -467,7 +455,8 @@ size_t mywrite(int myfd, const void *buf, size_t count)
     }
     char *buffer = (char *)buf;
     for (int i = 0; i < count; i++)
-    {
+    {   
+        inodes[myfd].real_size++;
         write_a_char(myfd, myopenfile[myfd].pos, buffer[i]);
         myopenfile[myfd].pos++;
     }
@@ -486,11 +475,7 @@ off_t mylseek(int myfd, off_t offset, int whence)
     }
     else if (whence == SEEK_END)
     {
-        myopenfile[myfd].pos += offset;
-        while (read_a_char(myfd, myopenfile[myfd].pos) != '\0')
-        {
-            myopenfile[myfd].pos++;
-        }
+        myopenfile[myfd].pos += inodes[myfd].real_size;
         
         
     }

@@ -2,6 +2,8 @@
 #include "myfs.h"
 #include <string.h>
 #include <stdarg.h>
+#define O_CREAT 0100
+
 
 myFILE *myfopen(const char *pathname, const char *mode)
 { // int myopen(const char *pathname, int flags);
@@ -11,7 +13,7 @@ myFILE *myfopen(const char *pathname, const char *mode)
         printf("error in malloc");
         exit(0);
     }
-    f->fd = myopen(pathname, 0);
+    f->fd = myopen(pathname,O_CREAT);
     if (strlen(mode) > 2)
     {
         printf("wrong mode");
@@ -22,6 +24,10 @@ myFILE *myfopen(const char *pathname, const char *mode)
     if (f->mod[0] == 'a')
     {
         mylseek(f->fd, 0, SEEK_END);
+    }
+    else if (f->mod[0] == 'w')
+    {
+        inodes[f->fd].real_size = 0;
     }
     return f;
 }
@@ -37,7 +43,7 @@ int myfclose(myFILE *stream)
     return 1; // return 1 if didnt close
 }
 
-size_t myfread(void *restrict ptr, size_t size, size_t nmemb, myFILE *restrict stream)
+size_t myfread(void * ptr, size_t size, size_t nmemb, myFILE * stream)
 { // size_t myread(int myfd, void *buf, size_t count)
 
     if (stream->mod[0] == 'r' || (stream->mod[0] == 'r' && stream->mod[1] == '+'))
@@ -49,14 +55,9 @@ size_t myfread(void *restrict ptr, size_t size, size_t nmemb, myFILE *restrict s
     }
     return 0; // cant read no mode for reading
 }
-int k=0;
 size_t myfwrite(const void * ptr, size_t size, size_t nmemb, myFILE *stream)
 { // size_t mywrite(int myfd, const void *buf, size_t count)
-k++;
-if(k==3){
-        float* f1=(float*)ptr;
-        printf("%f-in if myfwrite\n",*f1);
-    }
+
     if (stream->mod[0] == 'w' || (stream->mod[0] == 'r' && stream->mod[1] == '+') || stream->mod[0] == 'a')
     {
         size_t start_pos = myopenfile[stream->fd].pos;
@@ -77,7 +78,7 @@ int myfseek(myFILE *stream, long offset, int whence)
 }
 
 // insert from the stream file to the objects
-int myfscanf(myFILE *restrict stream, const char *restrict format, ...)
+int myfscanf(myFILE * stream, const char * format, ...)
 {
 
     va_list arguments;
@@ -97,7 +98,6 @@ int myfscanf(myFILE *restrict stream, const char *restrict format, ...)
             {
                 float* p=(float*)va_arg(arguments, void *);
                 float f=(float)*p;
-                printf("%f-in fscnaf\n",f);
                 myfread(p, sizeof(float), 1, stream);
                 j++;
             }
@@ -115,11 +115,11 @@ int myfscanf(myFILE *restrict stream, const char *restrict format, ...)
 // write to the file the chars
 int myfprintf(myFILE *stream, const char *format, ...)
 {
-    int j=0;
+
     va_list arguments;
     va_start(arguments, format);
     int format_len = strlen(format);
-
+    int j =0;
     for (size_t i = 0; i < format_len; i++)
     {
         if (format[i] == '%')
@@ -132,8 +132,7 @@ int myfprintf(myFILE *stream, const char *format, ...)
             }
             else if (format[i + 1] == 'f')
             {
-                float temp2 = (float)va_arg(arguments, double);
-                printf("%f-in fprint\n",temp2);
+                float temp2 = va_arg(arguments, double);
                 myfwrite(&temp2, sizeof(float), 1, stream);
                 j++;
             }
