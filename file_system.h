@@ -45,6 +45,9 @@ struct mydirent {
     int fds[MAX_DIR_SIZE];
     char d_name[NAME_SIZE+1];
 };
+struct open_file myopenfile[MAX_FILES];
+
+
 void mymkfs(int size);
 int mymount(const char *source, const char *target, const char *filesystemtype, unsigned long mountflags, const void *data);
 int myopen(const char *pathname, int flags);
