@@ -4,9 +4,7 @@
  */
 #include "file_system.h"
 
-struct super_block sb;
-struct inode *inodes;
-struct disk_block *dbs;
+
 
 //***find empty block and inode
 int find_empty_block()
@@ -350,6 +348,7 @@ void mymkfs(int size)
     for (int i = 0; i < sb.num_inodes; i++)
     {
         inodes[i].size = -1;
+        inodes[i].real_size = 0;
         inodes[i].first_block = -1;
         strcpy(inodes[i].name, "");
     }
@@ -449,7 +448,8 @@ size_t mywrite(int myfd, const void *buf, size_t count)
     }
     char *buffer = (char *)buf;
     for (int i = 0; i < count; i++)
-    {
+    {   
+        inodes[myfd].real_size++;
         write_a_char(myfd, myopenfile[myfd].pos, buffer[i]);
         myopenfile[myfd].pos++;
     }
@@ -468,11 +468,7 @@ off_t mylseek(int myfd, off_t offset, int whence)
     }
     else if (whence == SEEK_END)
     {
-        myopenfile[myfd].pos += offset;
-        while (read_a_char(myfd, myopenfile[myfd].pos) != '\0')
-        {
-            myopenfile[myfd].pos++;
-        }
+        myopenfile[myfd].pos += inodes[myfd].real_size;
         
         
     }

@@ -21,7 +21,12 @@ myFILE *myfopen(const char *pathname, const char *mode)
 
     if (f->mod[0] == 'a')
     {
+        printf("was in  myfopen if\n");
         mylseek(f->fd, 0, SEEK_END);
+    }
+    else if (f->mod[0] == 'w')
+    {
+        inodes[f->fd].real_size = 0;
     }
     return f;
 }
@@ -37,7 +42,7 @@ int myfclose(myFILE *stream)
     return 1; // return 1 if didnt close
 }
 
-size_t myfread(void *restrict ptr, size_t size, size_t nmemb, myFILE *restrict stream)
+size_t myfread(void * ptr, size_t size, size_t nmemb, myFILE * stream)
 { // size_t myread(int myfd, void *buf, size_t count)
 
     if (stream->mod[0] == 'r' || (stream->mod[0] == 'r' && stream->mod[1] == '+'))
@@ -50,7 +55,7 @@ size_t myfread(void *restrict ptr, size_t size, size_t nmemb, myFILE *restrict s
     return 0; // cant read no mode for reading
 }
 
-size_t myfwrite(const void *restrict ptr, size_t size, size_t nmemb, myFILE *stream)
+size_t myfwrite(const void * ptr, size_t size, size_t nmemb, myFILE *stream)
 { // size_t mywrite(int myfd, const void *buf, size_t count)
 
     if (stream->mod[0] == 'w' || (stream->mod[0] == 'r' && stream->mod[1] == '+') || stream->mod[0] == 'a')
@@ -73,7 +78,7 @@ int myfseek(myFILE *stream, long offset, int whence)
 }
 
 // insert from the stream file to the objects
-int myfscanf(myFILE *restrict stream, const char *restrict format, ...)
+int myfscanf(myFILE * stream, const char * format, ...)
 {
 
     va_list arguments;
@@ -108,11 +113,11 @@ int myfscanf(myFILE *restrict stream, const char *restrict format, ...)
 // write to the file the chars
 int myfprintf(myFILE *stream, const char *format, ...)
 {
-    int j=0;
+
     va_list arguments;
     va_start(arguments, format);
     int format_len = strlen(format);
-
+    int j =0;
     for (size_t i = 0; i < format_len; i++)
     {
         if (format[i] == '%')
@@ -125,7 +130,7 @@ int myfprintf(myFILE *stream, const char *format, ...)
             }
             else if (format[i + 1] == 'f')
             {
-                float temp2 = (float)va_arg(arguments, double);
+                float temp2 = va_arg(arguments, double);
                 myfwrite(&temp2, sizeof(float), 1, stream);
                 j++;
             }

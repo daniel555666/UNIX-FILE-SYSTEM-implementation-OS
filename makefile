@@ -4,8 +4,11 @@ FLAGS=
 HEADERS = 
 all: main
 
-main: main.o file_system.o mylibc.o
-	$(CC) main.o mylibc.o file_system.o -o main
+main: main.o lib.so
+	$(CC) main.o lib.so -o main
+
+lib.so: file_system.o mylibc.o 
+	$(CC) --shared -fPIC -g file_system.o mylibc.o  -o lib.so
 
 %.o: %.c 
 	$(CC) -c $< -o $@
